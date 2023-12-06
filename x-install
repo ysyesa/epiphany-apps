@@ -1,7 +1,5 @@
 #!/bin/bash
-set -o errexit
 set -o nounset
-set -o pipefail
 
 OUTPUT_DIR_DESKTOP_ENTRIES="./out.desktop-entries"
 OUTPUT_DIR_ICONS="./out.icons"
