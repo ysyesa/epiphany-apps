@@ -1,7 +1,11 @@
 applications:
+  - name: ChatGPT
+    comment: Web application for ChatGPT
+    url: https://chat.openai.com
+    icon: chatgpt.png
   - name: Gmail
     comment: Web application for Gmail
-    url: https://mail.google.com/
+    url: https://mail.google.com
     icon: gmail.png
   - name: Outlook
     comment: Web application for Microsoft Outlook
