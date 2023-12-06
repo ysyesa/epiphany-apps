@@ -1,0 +1,9 @@
+applications:
+  - name: Outlook
+    comment: Web application for Microsoft Outlook
+    url: https://outlook.office.com
+    icon: outlook.png
+
+input_path_icons: ./icons
+output_path_icons: ./out.icons
+output_path_desktop_entries: ./out.desktop-entries

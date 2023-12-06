@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+from PIL import Image
+import json
+import os
+import yaml
+
+class Config:
+    data = yaml.load(open("config.yaml", "r").read(), Loader=yaml.Loader)
+    APPLICATIONS = data["applications"]
+    INPUT_PATH_ICONS = data["input_path_icons"]
+    OUTPUT_PATH_ICONS = data["output_path_icons"]
+    OUTPUT_PATH_DESKTOP_ENTRIES = data["output_path_desktop_entries"]
+    TEMPLATE_DESKTOP_ENTRY = '''[Desktop Entry]
+Version=1.0
+Name={0}
+Comment={1}
+Type=Application
+Icon={2}
+Exec=epiphany --application-mode={3} {4}
+Terminal=false
+StartupNotify=true
+StartupWMClass=
+'''
+
+class IconResizer:
+    SIZES = [ (16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256) ]
+    @staticmethod
+    def resize(icon_filename: str):
+        path_to_input_icon = f"{Config.INPUT_PATH_ICONS}/{icon_filename}"
+        if not os.path.exists(path_to_input_icon):
+            raise Exception(f"Icon {icon_name} does not exist.")
+        
+        for size in IconResizer.SIZES:
+            path_to_output_icon = f"{Config.OUTPUT_PATH_ICONS}/{size[0]}x{size[1]}/apps"
+            os.makedirs(path_to_output_icon, exist_ok=True)
+            path_to_output_icon = f"{path_to_output_icon}/epiphany-apps.{icon_filename}"
+            with Image.open(path_to_input_icon) as icon:
+                resized_icon = icon.resize(size)
+                resized_icon.save(path_to_output_icon)
+
+class Application:
+    @staticmethod
+    def build(application):
+        os.makedirs(Config.OUTPUT_PATH_DESKTOP_ENTRIES, exist_ok=True)
+        desktop_entry_filename = f"epiphany-apps.{application['name'].lower()}.desktop"
+        
+        IconResizer.resize(application["icon"])
+        icon_components = application['icon'].split(".")
+        if len(icon_components) != 2 or icon_components[1] != "png":
+            raise Exception("Icon name must end with .png extension, and the name should not have dot in it. Correct example: outlook.png")
+        icon_name = f"epiphany-apps.{icon_components[0].lower()}"
+
+        with open(f"{Config.OUTPUT_PATH_DESKTOP_ENTRIES}/{desktop_entry_filename}", "w") as file:
+            file.write(Config.TEMPLATE_DESKTOP_ENTRY.format(
+                application["name"],
+                application["comment"],
+                icon_name,
+                desktop_entry_filename,
+                application["url"]
+            ))
+
+if __name__ == "__main__":
+    for application in Config.APPLICATIONS:
+        Application.build(application)

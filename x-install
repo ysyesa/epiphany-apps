@@ -1,0 +1,20 @@
+#!/bin/bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+OUTPUT_DIR_DESKTOP_ENTRIES="./out.desktop-entries"
+OUTPUT_DIR_ICONS="./out.icons"
+
+# Copying desktop entries
+for entry in $(ls "$OUTPUT_DIR_DESKTOP_ENTRIES"); do
+    sudo cp -i "$OUTPUT_DIR_DESKTOP_ENTRIES/$entry" /usr/share/applications/
+done
+
+# Copying icons
+for icon in $(ls "$OUTPUT_DIR_ICONS"); do
+    sudo cp -r "$OUTPUT_DIR_ICONS/$icon" /usr/share/icons/hicolor/
+done
+
+# Updating desktop entries database
+sudo update-desktop-database
